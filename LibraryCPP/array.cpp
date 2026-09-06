@@ -20,7 +20,7 @@ Array *array_create(size_t size)
 // delete array, free memory
 void array_delete(Array *arr)
 {
-    if (arr != NULL){
+    if (arr != nullptr){
         delete[] arr->data;
         delete arr;
     }
@@ -29,7 +29,7 @@ void array_delete(Array *arr)
 // returns specified array element
 Data array_get(const Array *arr, size_t index)
 {
-    if (arr != NULL && index < arr->size){
+    if (arr != nullptr && index < arr->size){
         return arr->data[index];
     }
     return (Data)0;
@@ -38,7 +38,7 @@ Data array_get(const Array *arr, size_t index)
 // sets the specified array element to the value
 void array_set(Array *arr, size_t index, Data value)
 {
-    if (arr != NULL && index < arr->size) {
+    if (arr != nullptr && index < arr->size) {
         arr->data[index] = value;
     }
 }
@@ -46,7 +46,7 @@ void array_set(Array *arr, size_t index, Data value)
 // returns array size
 size_t array_size(const Array *arr)
 {
-    if (arr != NULL) {
+    if (arr != nullptr) {
         return arr->size;
     }
     return 0;

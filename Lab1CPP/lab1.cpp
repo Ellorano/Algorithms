@@ -1,9 +1,18 @@
 #include <iostream>
 #include <fstream>
-#include <cstdlib>
 #include "array.h"
 
 using namespace std;
+
+void print_array(ostream &out, Array *arr)
+{
+    size_t size = array_size(arr);
+    for (size_t i = 0; i < size; i++){
+        if (i > 0) out << " ";
+        out << array_get(arr, i);
+    }
+    out << endl;
+}
 
 Array *array_create_and_read(ifstream &input)
 {
@@ -28,17 +37,15 @@ void task1(Array *arr, ifstream &input, ofstream &output)
 
     size_t size = array_size(arr);
 
-    for (size_t i = 0; i < size; i++){
-        if (i > 0) cout << " ";
-        cout << array_get(arr, i);
+    if (k1 < 0 || k1 >= (int)size || k2 < 0 || k2 >= (int)size) {
+        cout << "Ошибка: индексы k1/k2 выходят за пределы массива" << endl;
+        output << "Ошибка: индексы k1/k2 выходят за пределы массива" << endl;
+        return;
     }
-    cout << endl;
 
-    for (size_t i = 0; i < size; i++){
-        if (i > 0) output << " ";
-        output << array_get(arr, i);
-    }
-    output << endl;
+    print_array(cout, arr);
+
+    print_array(output, arr);
 
     int elem_k1 = array_get(arr, k1);
     int elem_k2 = array_get(arr, k2);
@@ -52,17 +59,9 @@ void task1(Array *arr, ifstream &input, ofstream &output)
         }
     }
 
-    for (size_t i = 0; i < size; i++){
-        if (i > 0) cout << " ";
-        cout << array_get(arr, i);
-    }
-    cout << endl;
+    print_array(cout, arr);
 
-    for (size_t i = 0; i < size; i++){
-        if (i > 0) output << " ";
-        output << array_get(arr, i);
-    }
-    output << endl;
+    print_array(output, arr);
 }
 
 void task2(Array *arr, ifstream &input, ofstream &output)
@@ -72,19 +71,9 @@ void task2(Array *arr, ifstream &input, ofstream &output)
     
     size_t size = array_size(arr);
     
-    for (size_t i = 0; i < size; i++) {
-        if (i > 0) cout << " ";
-        cout << array_get(arr, i);
-    }
-    cout << endl;
+    print_array(cout, arr);
     
-    for (size_t i = 0; i < size; i++) {
-        if (i > 0) output << " ";
-        output << array_get(arr, i);
-    }
-    output << endl;
-    
-    steps = steps % (int)size;
+    print_array(output, arr);
     
     Data* temp = new Data[size];
     
@@ -114,17 +103,9 @@ void task2(Array *arr, ifstream &input, ofstream &output)
     }
     delete[] temp;
     
-    for (size_t i = 0; i < size; i++) {
-        if (i > 0) cout << " ";
-        cout << array_get(arr, i);
-    }
-    cout << endl;
+    print_array(cout, arr);
     
-    for (size_t i = 0; i < size; i++) {
-        if (i > 0) output << " ";
-        output << array_get(arr, i);
-    }
-    output << endl;
+    print_array(output, arr);
 }
 
 int main(int argc, char **argv)

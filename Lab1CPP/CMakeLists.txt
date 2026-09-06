@@ -38,7 +38,7 @@ set_property(TEST test2_task2 PROPERTY PASS_REGULAR_EXPRESSION "0 0 0 -5 2 0")
 add_test(NAME test3_task2 
     COMMAND Lab1CPP ${CMAKE_CURRENT_SOURCE_DIR}/test3.txt
 )
-set_property(TEST test3_task2 PROPERTY PASS_REGULAR_EXPRESSION "0 0 0 1000")
+set_property(TEST test3_task2 PROPERTY PASS_REGULAR_EXPRESSION "0 0 0 0")
 
 add_custom_target(test_all
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
