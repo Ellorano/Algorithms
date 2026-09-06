@@ -1,5 +1,4 @@
 #include "array.h"
-#include <cstdlib>
 
 struct Array
 {
