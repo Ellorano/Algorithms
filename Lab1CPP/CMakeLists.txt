@@ -4,6 +4,8 @@ project(Lab1CPP)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(../LibraryCPP/Tests ${CMAKE_BINARY_DIR}/LibraryCPP_Tests)
+
 add_executable(Lab1CPP lab1.cpp)
 target_include_directories(Lab1CPP PUBLIC ../LibraryCPP)
 target_link_libraries(Lab1CPP LibraryCPP)
