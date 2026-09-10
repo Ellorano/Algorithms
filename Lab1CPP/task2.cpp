@@ -1,8 +1,12 @@
 #include "common.h"
 
-void task2(Array *arr, ifstream &input, ofstream &output) {
+bool task2(Array *arr, ifstream &input, ofstream &output) {
     int direction, steps;
-    input >> direction >> steps;
+
+    if (!(input >> direction >> steps)) {
+        print_error("Ошибка: не удалось прочитать параметры сдвига", output);
+        return false;
+    }
 
     size_t size = array_size(arr);
 
@@ -30,7 +34,7 @@ void task2(Array *arr, ifstream &input, ofstream &output) {
     } else {
         print_error("Ошибка: неверное направление", output);
         array_delete(temp);
-        exit(1);
+        return false;
     }
 
     for (size_t i = 0; i < size; i++) {
@@ -41,6 +45,8 @@ void task2(Array *arr, ifstream &input, ofstream &output) {
 
     print_array(cout, arr);
     print_array(output, arr);
+
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -70,7 +76,19 @@ int main(int argc, char **argv) {
 
     Array *arr = array_create_and_read(input);
 
-    task2(arr, input, output);
+    if (arr == nullptr) {
+        cerr << "Ошибка: неверный размер массива" << endl;
+        input.close();
+        output.close();
+        return 1;
+    }
+
+    if (!task2(arr, input, output)) {
+        array_delete(arr);
+        input.close();
+        output.close();
+        return 1;
+    }
 
     array_delete(arr);
 

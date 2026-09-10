@@ -1,16 +1,18 @@
-#include <cstdlib>
 #include "common.h"
 
-void task1(Array *arr, ifstream &input, ofstream &output) {
+bool task1(Array *arr, ifstream &input, ofstream &output) {
     int k1, k2;
-    input >> k1 >> k2;
+
+    if (!(input >> k1 >> k2)) {
+        print_error("Ошибка: не удалось прочитать индексы", output);
+        return false;
+    }
 
     size_t size = array_size(arr);
 
     if (k1 < 0 || k1 >= (int)size || k2 < 0 || k2 >= (int)size) {
-        cout << "Ошибка: индексы k1/k2 выходят за пределы массива" << endl;
-        output << "Ошибка: индексы k1/k2 выходят за пределы массива" << endl;
-        exit(1);
+        print_error("Ошибка: индексы k1/k2 выходят за пределы массива", output);
+        return false;
     }
 
     print_array(cout, arr);
@@ -30,6 +32,8 @@ void task1(Array *arr, ifstream &input, ofstream &output) {
 
     print_array(cout, arr);
     print_array(output, arr);
+
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -61,10 +65,17 @@ int main(int argc, char **argv) {
 
     if (arr == nullptr) {
         cerr << "Ошибка: неверный размер массива" << endl;
+        input.close();
+        output.close();
         return 1;
     }
 
-    task1(arr, input, output);
+    if (!task1(arr, input, output)) {
+        array_delete(arr);
+        input.close();
+        output.close();
+        return 1;
+    }
 
     array_delete(arr);
 
