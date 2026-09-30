@@ -5,6 +5,10 @@
 #include <algorithm>
 #include "queue.h"
 
+typedef std::vector<std::vector<char>> MazeGrid; // входной лабиринт
+typedef std::vector<std::vector<int>>  DistGrid; // массив расстояний (используется для distS и distE)
+typedef std::vector<std::vector<bool>> PathGrid; // отметки клеток пути
+
 // координаты клетки в сетке
 struct Position {
     int r;
@@ -19,7 +23,7 @@ struct Position {
 // верхний/нижний: если соседняя строка не короче нашей, то
 // граничат (nr, c) и (nr, c+1); если короче — (nr, c-1) и (nr, c).
 static std::vector<Position> getNeighbors(int r, int c, int H,
-                                          const std::vector<std::vector<char>> &grid) {
+                                          const MazeGrid &grid) {
     std::vector<Position> res;
 
     if (c - 1 >= 0) res.push_back(Position(r, c - 1));
@@ -48,9 +52,9 @@ static std::vector<Position> getNeighbors(int r, int c, int H,
 // один шаг BFS из очереди q по массиву dist
 // если сосед уже помечен в otherDist — волны встретились, возвращаем его
 static Position bfsStep(Queue &q,
-                        std::vector<std::vector<int>> &dist,
-                        const std::vector<std::vector<int>> &otherDist,
-                        const std::vector<std::vector<char>> &grid,
+                        DistGrid &dist,
+                        const DistGrid &otherDist,
+                        const MazeGrid &grid,
                         int H, int maxW) {
     int v = q.get(); q.remove();
     int r = v / maxW;
@@ -67,11 +71,11 @@ static Position bfsStep(Queue &q,
 }
 
 // встречный BFS: гоняем две очереди с двух концов, пока волны не пересекутся
-static Position bidirectionalBFS(const std::vector<std::vector<char>> &grid,
+static Position bidirectionalBFS(const MazeGrid &grid,
                                  int H, int maxW,
                                  Position start, Position end,
-                                 std::vector<std::vector<int>> &distS,
-                                 std::vector<std::vector<int>> &distE) {
+                                 DistGrid &distS,
+                                 DistGrid &distE) {
 
     distS.assign(H, std::vector<int>(maxW, -1));
     distE.assign(H, std::vector<int>(maxW, -1));
@@ -100,9 +104,9 @@ static Position bidirectionalBFS(const std::vector<std::vector<char>> &grid,
 
 // обход от from к to по убыванию dist, отметка клеток на пути
 static void traceBack(Position from, Position to,
-                      const std::vector<std::vector<int>> &dist,
-                      std::vector<std::vector<bool>> &onPath,
-                      const std::vector<std::vector<char>> &grid,
+                      const DistGrid &dist,
+                      PathGrid &onPath,
+                      const MazeGrid &grid,
                       int H) {
     Position cur = from;
     while (!(cur == to)) {
@@ -121,14 +125,15 @@ static void traceBack(Position from, Position to,
 
 
 // восстанавливаем путь: от meet к start по distS и от meet к end по distE
-static std::vector<std::vector<bool>> reconstructPath(
-        const std::vector<std::vector<char>> &grid,
+static PathGrid reconstructPath(
+        const MazeGrid &grid,
         int H,
         Position start, Position end, Position meet,
-        const std::vector<std::vector<int>> &distS,
-        const std::vector<std::vector<int>> &distE) {
+        const DistGrid &distS,
+        const DistGrid &distE) {
 
-    std::vector<std::vector<bool>> onPath(H);
+    PathGrid onPath(H);
+
     for (int r = 0; r < H; ++r) onPath[r].assign(grid[r].size(), false);
 
     traceBack(meet, start, distS, onPath, grid, H);
@@ -138,9 +143,9 @@ static std::vector<std::vector<bool>> reconstructPath(
 }
 
 // печать гексагональной сетки
-static void printMaze(const std::vector<std::vector<char>> &grid,
+static void printMaze(const MazeGrid &grid,
                       const Position &start, const Position &end,
-                      const std::vector<std::vector<bool>> &onPath) {
+                      const PathGrid &onPath) {
     int H = (int)grid.size();
     int maxW = 0;
     for (const auto &row : grid) maxW = std::max(maxW, (int)row.size());
@@ -234,7 +239,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::vector<std::vector<char>> grid;
+    MazeGrid grid;
     for (const auto &s : lines) grid.emplace_back(s.begin(), s.end());
 
     int H = (int)grid.size();
@@ -255,7 +260,7 @@ int main(int argc, char *argv[]) {
     }
 
     // встречный BFS
-    std::vector<std::vector<int>> distS, distE;
+    DistGrid distS, distE;
     Position meet = bidirectionalBFS(grid, H, maxW, start, end, distS, distE);
 
     if (meet.r == -1) {
@@ -264,8 +269,7 @@ int main(int argc, char *argv[]) {
     }
 
     // восстановление пути
-    std::vector<std::vector<bool>> onPath =
-        reconstructPath(grid, H, start, end, meet, distS, distE);
+    PathGrid onPath = reconstructPath(grid, H, start, end, meet, distS, distE);
 
     printMaze(grid, start, end, onPath);
 
