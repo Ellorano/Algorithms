@@ -2,5 +2,5 @@
 a b c
 3
 a b 1
-b c 1
-a c 1
+b c 2
+a c 3

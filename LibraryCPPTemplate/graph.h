@@ -81,29 +81,29 @@ public:
 
     void remove_vertex(IndexType vertex)
     {
-        check_vertex(vertex);
-        IndexType n = names_.size();
+    check_vertex(vertex);
+    IndexType n = names_.size();
 
-        for (IndexType u = 0; u < n; ++u)
+    for (IndexType u = 0; u < n; ++u)
+    {
+        if (u == vertex) continue;
+        ArcList &lst = adjacency_.get(u);
+        Item *prev = nullptr;
+        for (Item *it = lst.first(); it; )
         {
-            if (u == vertex) continue;
-            ArcList &lst = adjacency_.get(u);
-            Item *prev = nullptr;
-            for (Item *it = lst.first(); it; )
+            if (it->data().to == vertex)
+                it = lst.erase_next(prev);
+            else
             {
-                if (it->data().to == vertex)
-                    it = prev ? lst.erase_next(prev) : lst.erase_first();
-                else
-                {
-                    if (it->data().to > vertex) --it->data().to;
-                    prev = it;
-                    it = it->next();
-                }
+                if (it->data().to > vertex) --it->data().to;
+                prev = it;
+                it = it->next();
             }
         }
+    }
 
-        names_.erase(vertex);
-        adjacency_.erase(vertex);
+    names_.erase(vertex);
+    adjacency_.erase(vertex);
     }
 
     void add_edge(IndexType from, IndexType to, const EdgeLabel &label = EdgeLabel())
@@ -117,21 +117,20 @@ public:
 
     void remove_edge(IndexType from, IndexType to)
     {
-        check_vertex(from);
-        check_vertex(to);
-        ArcList &lst = adjacency_.get(from);
-        Item *prev = nullptr;
-        for (Item *it = lst.first(); it; )
+    check_vertex(from);
+    check_vertex(to);
+    ArcList &lst = adjacency_.get(from);
+    Item *prev = nullptr;
+    for (Item *it = lst.first(); it; )
+    {
+        if (it->data().to == to)
         {
-            if (it->data().to == to)
-            {
-                if (prev) lst.erase_next(prev);
-                else      lst.erase_first();
-                return;
-            }
-            prev = it;
-            it = it->next();
+            lst.erase_next(prev);
+            return;
         }
+        prev = it;
+        it = it->next();
+    }
     }
 
     bool has_edge(IndexType from, IndexType to) const
@@ -230,17 +229,17 @@ private:
 
     static void remove_out_of_range(ArcList &lst, IndexType bound)
     {
-        Item *prev = nullptr;
-        for (Item *it = lst.first(); it; )
+    Item *prev = nullptr;
+    for (Item *it = lst.first(); it; )
+    {
+        if (it->data().to >= bound)
+            it = lst.erase_next(prev);
+        else
         {
-            if (it->data().to >= bound)
-                it = prev ? lst.erase_next(prev) : lst.erase_first();
-            else
-            {
-                prev = it;
-                it = it->next();
-            }
+            prev = it;
+            it = it->next();
         }
+    }
     }
 
     void build_grid(IndexType rows, IndexType cols)

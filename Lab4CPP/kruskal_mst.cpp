@@ -58,6 +58,12 @@ static bool same_orientation(SizeType u, SizeType v, const GraphType &g)
     return u < v || !g.has_edge(v, u);
 }
 
+static bool edge_less(const WeightedEdge &a, const WeightedEdge &b)
+{
+    if (a.from != b.from) return a.from < b.from;
+    return a.to < b.to;
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -111,6 +117,8 @@ int main(int argc, char **argv)
         std::cout << "No spanning tree\n";
         return 0;
     }
+
+    std::sort(tree.begin(), tree.end(), edge_less);
 
     for (SizeType i = 0; i < tree.size(); ++i)
         std::cout << g.vertex_label(tree[i].from) << " -- "
